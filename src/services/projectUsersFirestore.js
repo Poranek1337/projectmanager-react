@@ -1,4 +1,4 @@
-import { db } from '../lib/firebase';
+import { db } from '../infrastructure/firebase/firebase.js';
 import { doc, getDoc, updateDoc, arrayUnion, collection, query, where, getDocs } from 'firebase/firestore';
 
 export const checkUserEmailExists = async (email) => {

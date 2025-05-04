@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { db } from '../lib/firebase';
+import { db } from '../infrastructure/firebase/firebase.js';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { useAuth } from "../hooks/auth/useAuth";
 import { Card, CardHeader, CardTitle, CardContent } from "../components/ui/card";

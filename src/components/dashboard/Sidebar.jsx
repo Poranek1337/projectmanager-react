@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { db } from '../../lib/firebase';
+import { db } from '../../infrastructure/firebase/firebase.js';
 import { getUserFromLocalStorage, getUserUidFromLocalStorage } from '../../storage/userLocalStorage';
 import { collection, query, where, getDocs, doc, getDoc } from 'firebase/firestore';
 import CreateWorkspaceDialog from './CreateWorkspaceDialog';
@@ -8,19 +8,20 @@ import { Button } from '../ui/button';
 import { getUserFromFirestore } from '../../services/userFirestore';
 import SettingsDialog from './SettingsDialog';
 import { signOut } from 'firebase/auth';
-import { auth } from '../../lib/firebase';
+import { auth } from '../../infrastructure/firebase/firebase.js';
 import { createWorkspace } from '../../services/workspaceFirestore';
+import { useAuth } from '../../hooks/auth/useAuth';
 
 const Sidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [myWorkspaces, setMyWorkspaces] = useState([]);
   const [sharedWorkspaces, setSharedWorkspaces] = useState([]);
   const [sharedOwners, setSharedOwners] = useState({});
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const user = getUserFromLocalStorage();
-  const uid = user?.uid || getUserUidFromLocalStorage();
+  const uid = user?.uid;
   const [pendingInvitesCount, setPendingInvitesCount] = useState(0);
 
   const fetchWorkspaces = async () => {
@@ -92,16 +93,16 @@ const Sidebar = () => {
 
   return (
     <>
-      <aside className="w-64 bg-white border-r flex flex-col p-6 gap-4 shadow-xl">
-        <div className="flex items-center gap-2 mb-8">
+      <aside className="w-64 h-screen bg-white border-r flex flex-col p-6 gap-4 shadow-xl">
+        <div className="flex items-center gap-2 mb-8 mt-5">
           <img src="/assets/logo.svg" alt="Logo" className="w-7 h-7" />
           <span className="text-lg font-semibold text-indigo-600 tracking-tight">ProjectManager</span>
         </div>
-        <nav className="flex-1 flex flex-col gap-2">
-          <a href="/dashboard" className={`font-semibold rounded-lg px-3 py-2 ${location.pathname === '/dashboard' ? 'text-indigo-600 bg-indigo-50' : 'text-gray-700 hover:bg-gray-100'}`}>Dashboard</a>
-          <a href="/my-tasks" className={`text-gray-700 hover:bg-gray-100 rounded-lg px-3 py-2 ${location.pathname === '/my-tasks' ? 'text-indigo-600 bg-indigo-50' : ''}`}>My Tasks</a>
+        <nav className="flex-1 flex flex-col gap-2 overflow-y-auto">
+          <a href="/manager/dashboard" className={`font-semibold rounded-lg px-3 py-2 ${location.pathname === '/dashboard' ? 'text-indigo-600 bg-indigo-50' : 'text-gray-700 hover:bg-gray-100'}`}>Dashboard</a>
+          <a href="/manager/my-tasks" className={`text-gray-700 hover:bg-gray-100 rounded-lg px-3 py-2 ${location.pathname === '/my-tasks' ? 'text-indigo-600 bg-indigo-50' : ''}`}>My Tasks</a>
           <a
-            href="/invitations"
+            href="/manager/invitations"
             className={`text-gray-700 hover:bg-gray-100 rounded-lg px-3 py-2 flex justify-between ${location.pathname === '/invitations' ? 'text-indigo-600 bg-indigo-50' : ''}`}
           >
             Invitations
@@ -127,7 +128,7 @@ const Sidebar = () => {
             return (
               <a
                 key={ws.id}
-                href="#"
+                href={`/manager/project/${ws.id}`}
                 className={`flex items-center gap-2 rounded-lg px-3 py-2 cursor-pointer ${isActive ? 'bg-indigo-100 text-indigo-700 font-semibold' : 'text-gray-700 hover:bg-gray-100'}`}
                 style={{ borderLeft: `4px solid ${ws.color}` }}
                 onClick={e => {
@@ -151,7 +152,7 @@ const Sidebar = () => {
             return (
               <a
                 key={ws.id}
-                href="#"
+                href={`/manager/project/${ws.id}`}
                 className={`flex flex-col items-start gap-0 rounded-lg px-3 py-2 cursor-pointer ${isActive ? 'bg-indigo-100 text-indigo-700 font-semibold' : 'text-gray-700 hover:bg-gray-100'}`}
                 style={{ borderLeft: `4px solid ${ws.color}` }}
                 onClick={e => {

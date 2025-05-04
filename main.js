@@ -1,4 +1,3 @@
-// Apply polyfill for deprecated util._extend API
 import './util-polyfill.cjs';
 
 import { app, BrowserWindow, ipcMain } from 'electron';
@@ -6,7 +5,6 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 
-// Get __dirname equivalent in ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
@@ -16,8 +14,10 @@ function createWindow() {
     mainWindow = new BrowserWindow({
         width: 1200,
         height: 800,
+        titleBarStyle: 'hiddenInset',
         transparent: true,
-        frame: false,
+        vibrancy: 'under-window',
+        backgroundColor: '#00000000',
         webPreferences: {
             nodeIntegration: false,
             contextIsolation: true,
@@ -25,23 +25,17 @@ function createWindow() {
         },
     });
 
-    // Check if we're in development or production
     const isDev = process.env.NODE_ENV !== 'production';
 
     if (isDev) {
-        // In development, load from the Vite dev server
-        mainWindow.loadURL('http://localhost:5173');
-        // Open DevTools
-        mainWindow.webContents.openDevTools();
+        mainWindow.loadURL('http://localhost:5173/manager');
     } else {
-        // In production, load the built files
         mainWindow.loadFile(path.join(__dirname, 'dist', 'index.html'))
             .catch(err => {
                 console.error('Failed to load index.html:', err);
             });
     }
 
-    // Window control events
     ipcMain.on('window-minimize', () => {
         mainWindow?.minimize();
     });
@@ -62,7 +56,6 @@ function createWindow() {
         mainWindow = null;
     });
 
-    // Debug info
     mainWindow.webContents.on('did-fail-load', (event, errorCode, errorDescription) => {
         console.error('Failed to load:', errorCode, errorDescription);
     });

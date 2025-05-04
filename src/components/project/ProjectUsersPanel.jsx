@@ -6,7 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { checkUserEmailExists, addUserToProject, removeUserFromProject, updateUserRoleInProject } from '../../services/projectUsersFirestore';
 import { getUserFromFirestore } from '../../services/userFirestore';
-import { db } from '../../lib/firebase';
+import { db } from '../../infrastructure/firebase/firebase.js';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { doc, getDoc, updateDoc, deleteDoc, Timestamp } from 'firebase/firestore';
 import { useProjectUsers } from '../../hooks/useProjectUsers';

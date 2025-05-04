@@ -15,7 +15,7 @@
     "electron:build": "npm run build && electron-builder",
     "electron:preview": "npm run build && cross-env NODE_ENV=production electron .",
     "build:win": "npm run build && electron-builder --win --x64",
-    "build:mac": "npm run build && electron-builder --mac --arm64 --x64 --config.mac.identity=null",
+    "build:mac": "npm run build && electron-builder --mac --config.mac.identity=null",
     "build:linux": "npm run build && electron-builder --linux"
   },
   "dependencies": {
@@ -72,7 +72,7 @@
         "dmg",
         "zip"
       ],
-      "icon": "build/icons/mac/icon.icns",
+      "icon": "public/assets/icons/icons/mac/icon.icns",
       "identity": null
     },
     "win": {
@@ -80,7 +80,7 @@
         "nsis",
         "portable"
       ],
-      "icon": "build/icons/win/icon.ico"
+      "icon": "public/assets/icons/icons/win/icon.ico"
     },
     "linux": {
       "target": [
@@ -88,7 +88,7 @@
         "deb"
       ],
       "category": "Office",
-      "icon": "build/icons/png"
+      "icon": "public/assets/icons/icons/png"
     },
     "nsis": {
       "oneClick": false,
@@ -97,5 +97,6 @@
       "createStartMenuShortcut": true
     }
   },
-  "proxy": "http://localhost:8080"
+  "proxy": "http://localhost:8080",
+  "homepage": "/manager"
 }

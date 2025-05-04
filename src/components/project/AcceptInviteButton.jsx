@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { doc, updateDoc, arrayUnion, increment, getDoc, setDoc } from "firebase/firestore";
-import { db } from "../../lib/firebase";
+import { db } from "../../infrastructure/firebase/firebase.js";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { getWorkspaceById } from "../../services/workspaceFirestore";

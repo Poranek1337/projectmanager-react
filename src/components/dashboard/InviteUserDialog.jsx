@@ -4,8 +4,18 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { createInvite } from "@/services/inviteService";
 
+function getCurrentUserUid() {
+  try {
+    const user = JSON.parse(localStorage.getItem("user"));
+    return user?.uid || null;
+  } catch {
+    return null;
+  }
+}
+
 export default function InviteUserDialog({ open, onOpenChange, projectId }) {
-  const [email, setEmail] = useState("");
+  const [hours, setHours] = useState(48);
+  const [maxUses, setMaxUses] = useState(1);
   const [inviteLink, setInviteLink] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -16,15 +26,19 @@ export default function InviteUserDialog({ open, onOpenChange, projectId }) {
     setError("");
     setInviteLink("");
     setCopied(false);
-    if (!email.trim()) {
-      setError("Podaj email użytkownika.");
+    if (!hours || hours < 1 || hours > 168) {
+      setError("Podaj liczbę godzin (1-168)." );
+      return;
+    }
+    if (!maxUses || maxUses < 1 || maxUses > 100) {
+      setError("Podaj liczbę użyć (1-100)." );
       return;
     }
     setLoading(true);
     try {
-      // Domyślnie: link ważny 48h, 1 użycie
-      const link = await createInvite(projectId, 48, 1, email.trim());
-      setInviteLink(window.location.origin + link);
+      const createdBy = getCurrentUserUid();
+      const link = await createInvite(projectId, Number(hours), Number(maxUses), createdBy);
+      setInviteLink(window.location.origin + '/manager' + link);
     } catch (err) {
       setError("Błąd generowania linku: " + (err.message || err));
     }
@@ -40,10 +54,11 @@ export default function InviteUserDialog({ open, onOpenChange, projectId }) {
   };
 
   const handleClose = () => {
-    setEmail("");
     setInviteLink("");
     setError("");
     setCopied(false);
+    setHours(48);
+    setMaxUses(1);
     onOpenChange(false);
   };
 
@@ -54,18 +69,31 @@ export default function InviteUserDialog({ open, onOpenChange, projectId }) {
           <DialogHeader className="mb-4">
             <DialogTitle className="text-2xl font-extrabold mb-2 text-center tracking-tight">Zaproś użytkownika</DialogTitle>
           </DialogHeader>
-          <div className="mb-4 text-zinc-700 text-center text-base">Tutaj możesz dodać formularz do zapraszania użytkowników do projektu o ID: <span className="font-mono text-indigo-600">{projectId}</span>.</div>
+          <div className="mb-4 text-zinc-700 text-center text-base">Wygeneruj link zaproszenia do projektu o ID: <span className="font-mono text-indigo-600">{projectId}</span>.</div>
           <form onSubmit={handleGenerate} className="flex flex-col gap-5">
-            <div>
-              <label className="block text-base font-semibold mb-1 text-zinc-800">Email użytkownika</label>
-              <Input
-                type="email"
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-                placeholder="np. user@email.com"
-                required
-                className="rounded-xl border-2 border-zinc-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 transition px-4 py-2 text-base shadow-sm bg-white/90"
-              />
+            <div className="flex gap-4">
+              <div className="flex-1">
+                <label className="block text-base font-semibold mb-1 text-zinc-800">Ważność (godziny)</label>
+                <Input
+                  type="number"
+                  min={1}
+                  max={168}
+                  value={hours}
+                  onChange={e => setHours(e.target.value)}
+                  className="rounded-xl border-2 border-zinc-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 transition px-4 py-2 text-base shadow-sm bg-white/90"
+                />
+              </div>
+              <div className="flex-1">
+                <label className="block text-base font-semibold mb-1 text-zinc-800">Liczba użyć</label>
+                <Input
+                  type="number"
+                  min={1}
+                  max={100}
+                  value={maxUses}
+                  onChange={e => setMaxUses(e.target.value)}
+                  className="rounded-xl border-2 border-zinc-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 transition px-4 py-2 text-base shadow-sm bg-white/90"
+                />
+              </div>
             </div>
             {error && <div className="text-red-500 text-sm text-center font-medium">{error}</div>}
             <div className="flex flex-row gap-3 mt-2 justify-end">

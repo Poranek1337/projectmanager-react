@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
-import { db } from '../lib/firebase';
+import { db } from '../infrastructure/firebase/firebase.js';
 
 export function useInvitations(user) {
   const [pendingInvites, setPendingInvites] = useState([]);

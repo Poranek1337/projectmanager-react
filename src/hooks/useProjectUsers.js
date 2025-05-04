@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { checkUserEmailExists, removeUserFromProject, updateUserRoleInProject } from '../services/projectUsersFirestore';
 import { getUserFromFirestore } from '../services/userFirestore';
-import { db } from '../lib/firebase';
+import { db } from '../infrastructure/firebase/firebase.js';
 import { doc, getDoc, updateDoc, deleteDoc, Timestamp } from 'firebase/firestore';
 
 export function useProjectUsers(project, currentUser, refresh) {

@@ -5,7 +5,7 @@ import AuthContainer from './components/auth/AuthContainer'
 import Dashboard from './components/dashboard/Dashboard'
 import { Button } from './components/ui/button'
 import { NotificationProvider } from "./NotificationContext";
-import { auth, onAuthStateChanged, signOut } from '@/lib/firebase';
+import { auth, onAuthStateChanged, signOut } from '@/infrastructure/firebase/firebase.js';
 import ProjectPanel from './pages/ProjectPanel';
 import MainLayout from './layouts/MainLayout';
 import InvitePage from './pages/InvitePage';
@@ -109,25 +109,30 @@ const App = () => {
     );
   };
 
+  useEffect(() => {
+    if (isElectron) {
+      document.body.classList.add('electron');
+      document.body.style.background = 'transparent';
+      document.body.style.backdropFilter = 'blur(10px)';
+    } else {
+      document.body.classList.remove('electron');
+      document.body.style.background = '';
+      document.body.style.backdropFilter = '';
+    }
+  }, [isElectron]);
+
   return (
-    <BrowserRouter {...routerOptions}>
+    <BrowserRouter basename="/manager" {...routerOptions}>
       <NotificationProvider>
         <AuthProvider>
-          <div className="min-h-screen bg-gradient-to-b from-blue-50 to-indigo-100">
-            {isElectron && <TabBar />}
+          <div className={`min-h-screen ${isElectron ? 'bg-transparent backdrop-blur-sm' : 'bg-gradient-to-b from-blue-50 to-indigo-100'}`}>
             <div className={`flex flex-col items-center justify-center p-0 ${isElectron ? 'min-h-[calc(100vh-3rem)]' : 'min-h-screen'}`}>
               <Routes>
-                <Route path="/" element={<Navigate to="/dashboard" replace />} />
-                <Route 
-                  path="/login" 
-                  element={
-                    <AuthContext.Consumer>
-                      {({ authenticated }) => 
-                        authenticated ? <Navigate to="/dashboard" replace /> : <LoginPage />
-                      }
-                    </AuthContext.Consumer>
-                  } 
-                />
+                <Route path="/" element={<AuthContext.Consumer>
+                  {({ authenticated }) =>
+                    authenticated ? <Navigate to="/dashboard" replace /> : <LoginPage />
+                  }
+                </AuthContext.Consumer>} />
                 <Route path="/invite/:token" element={<InvitePage />} />
                 <Route path="/settings" element={<SettingsPage />} />
                 <Route element={<PrivateRoute><MainLayout /></PrivateRoute>}>

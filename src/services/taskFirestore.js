@@ -1,4 +1,4 @@
-import { db } from '../lib/firebase';
+import { db } from '../infrastructure/firebase/firebase.js';
 import { collection, addDoc, getDocs, query, where, doc, updateDoc, arrayUnion, deleteDoc } from 'firebase/firestore';
 import { createTaskModel, createNoteModel } from '../models/taskModel';
 
@@ -34,8 +34,14 @@ export const updateTaskStatus = async (taskId, status) => {
 export const addNoteToTask = async (taskId, userId, content) => {
   const note = createNoteModel({ taskId, userId, content });
   const taskRef = doc(db, 'tasks', taskId);
+  const snap = await getDoc(taskRef);
+  let notes = [];
+  if (snap.exists()) {
+    const data = snap.data();
+    notes = Array.isArray(data.notes) ? data.notes : [];
+  }
   await updateDoc(taskRef, {
-    notes: arrayUnion(note)
+    notes: [...notes, note]
   });
   return note;
 };

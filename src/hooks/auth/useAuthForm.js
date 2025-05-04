@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { auth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, googleProvider } from '@/lib/firebase';
-import { db } from '@/lib/firebase';
+import { auth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, googleProvider } from '@/infrastructure/firebase/firebase.js';
+import { db } from '@/infrastructure/firebase/firebase.js';
 import { saveUserToLocalStorage } from '@/storage/userLocalStorage';
 import { saveUserToFirestoreIfNotExists } from '@/services/userFirestore';
 import { getUserDataFromFirebaseUser } from '@/models/userModel';

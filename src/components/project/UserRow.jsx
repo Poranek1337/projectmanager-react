@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Select, SelectItem } from "@/components/ui/select";
+import { getInitials } from "@/utils/getInitials";
 
 const roleLabels = {
   owner: "Właściciel",
@@ -9,26 +10,24 @@ const roleLabels = {
   user: "Użytkownik",
 };
 
-function getInitials(user) {
-  if (!user) return "?";
-  const first = user.firstName?.[0] || "";
-  const last = user.lastName?.[0] || "";
-  if (first || last) return (first + last).toUpperCase();
-  if (user.email) return user.email[0].toUpperCase();
-  if (user.uid) return user.uid[0].toUpperCase();
-  return "?";
-}
-
 export default function UserRow({ user, userDetails, project, canManage, currentUser, loading, handleRoleChange, handleRemove }) {
   const isOwner = user.role === "owner";
   const isCurrent = currentUser?.uid === user.uid;
+  const [imgError, setImgError] = useState(false);
 
   return (
     <tr className="border-b last:border-0">
       <td className="py-2 px-3 flex items-center gap-3">
         <Avatar className="w-8 h-8">
-          <AvatarImage src={user.photo} alt={user.firstName} />
-          <AvatarFallback>{getInitials(user)}</AvatarFallback>
+          {user.photo && !imgError ? (
+            <AvatarImage
+              src={user.photo}
+              alt={user.firstName}
+              onError={() => setImgError(true)}
+            />
+          ) : (
+            <AvatarFallback>{getInitials(user)}</AvatarFallback>
+          )}
         </Avatar>
         <div className="flex flex-col">
           <span className="font-medium text-zinc-900 dark:text-zinc-100">{user.firstName} {user.lastName}</span>

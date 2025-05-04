@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
-import { db } from '../lib/firebase';
+import { db } from '../infrastructure/firebase/firebase.js';
 
 export function useUserProfile() {
   const [profile, setProfile] = useState({ firstName: '', lastName: '', photo: '' });

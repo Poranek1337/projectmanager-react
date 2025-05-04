@@ -1,5 +1,5 @@
 import { collection, addDoc, Timestamp, query, where, getDocs } from "firebase/firestore";
-import { db } from "../lib/firebase";
+import { db } from "../infrastructure/firebase/firebase.js";
 import { v4 as uuidv4 } from "uuid";
 
 export async function createInvite(projectId, expiresInHours, maxUses, createdBy) {

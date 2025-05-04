@@ -4,8 +4,8 @@ import { Card } from '../ui/card';
 import LoginForm from './LoginForm';
 import RegisterForm from './RegisterForm';
 import ErrorMessage from '../ui/ErrorMessage';
-import { auth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, googleProvider } from '@/lib/firebase';
-import { db } from '@/lib/firebase';
+import { auth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, googleProvider } from '@/infrastructure/firebase/firebase.js';
+import { db } from '@/infrastructure/firebase/firebase.js';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { saveUserToLocalStorage } from '@/storage/userLocalStorage';
 import { saveUserToFirestoreIfNotExists } from '@/services/userFirestore';
@@ -84,7 +84,7 @@ const AuthContainer = ({ onAuthSuccess }) => {
           </div>
           <Button
             type="button"
-            className="w-full max-w-md bg-white text-black font-semibold hover:bg-zinc-200 flex items-center justify-center gap-2"
+            className="w-full max-w-md !bg-white !text-black font-semibold hover:bg-zinc-200 flex items-center justify-center gap-2"
             onClick={handleGoogleAuth}
             disabled={isLoading}
           >

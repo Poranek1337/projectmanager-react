@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { getWorkspaceById } from '../services/workspaceFirestore';
-import { db } from '../lib/firebase';
+import { db } from '@/infrastructure/firebase/firebase.js';
 import { motion, useAnimation, useInView } from 'framer-motion';
 import ProjectUsersPanel from '../components/project/ProjectUsersPanel';
 import { getUserFromLocalStorage } from '../storage/userLocalStorage';
@@ -22,6 +22,8 @@ import TaskDataTableTanstack from '../components/project/TaskDataTableTanstack';
 import { Bar, BarChart, CartesianGrid, XAxis, Tooltip, Legend, Pie, PieChart, Cell, ResponsiveContainer, LineChart, Line, YAxis } from 'recharts';
 import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend, ChartLegendContent } from '../components/ui/chart';
 import { Users, CheckCircle2, ListTodo } from 'lucide-react';
+import { getInitials } from "@/utils/getInitials";
+import UserAvatar from "@/components/ui/UserAvatar";
 
 const TASK_STATUSES = ['TODO', 'IN_PROGRESS', 'DONE'];
 
@@ -64,16 +66,13 @@ function KanbanTaskCard({ task, users, currentUser }) {
             : "flex items-center"
         }>
           {visibleUsers.map((u, idx) => (
-            <Avatar
+            <UserAvatar
               key={u.uid}
-              className="w-8 h-8 border-2 border-white dark:border-zinc-800 rounded-full bg-zinc-200 text-zinc-700 font-bold text-xs"
+              user={u}
+              className="border-2 border-white dark:border-zinc-800 rounded-full bg-zinc-200 text-zinc-700 font-bold text-xs"
+              size="w-8 h-8"
               style={visibleUsers.length > 1 ? { zIndex: 10 - idx } : {}}
-            >
-              {u.photo ? (
-                <AvatarImage src={u.photo} alt={u.firstName} />
-              ) : null}
-              <AvatarFallback>{getInitials(u)}</AvatarFallback>
-            </Avatar>
+            />
           ))}
           {extraCount > 0 && (
             <span
@@ -87,17 +86,6 @@ function KanbanTaskCard({ task, users, currentUser }) {
       </div>
     </div>
   );
-}
-
-function getInitials(user) {
-  if (!user) return '';
-  const first = user.firstName?.[0] || '';
-  const last = user.lastName?.[0] || '';
-  if (first || last) return (first + last).toUpperCase();
-  // fallback na email/uid
-  if (user.email) return user.email[0].toUpperCase();
-  if (user.uid) return user.uid[0].toUpperCase();
-  return '?';
 }
 
 function UserMultiSelect({ users, value, onChange, placeholder = "Wybierz użytkowników" }) {
@@ -134,16 +122,7 @@ function UserMultiSelect({ users, value, onChange, placeholder = "Wybierz użytk
           if (!u) return null;
           return (
             <span key={uid} className="flex items-center gap-1 bg-indigo-100 dark:bg-indigo-900 text-indigo-800 dark:text-indigo-200 px-2 py-1 rounded-full text-xs max-w-[120px] truncate">
-              {u.photo ? (
-                <Avatar className="w-5 h-5">
-                  <AvatarImage src={u.photo} alt={u.firstName} />
-                  <AvatarFallback>{getInitials(u)}</AvatarFallback>
-                </Avatar>
-              ) : (
-                <Avatar className="w-5 h-5">
-                  <AvatarFallback>{getInitials(u)}</AvatarFallback>
-                </Avatar>
-              )}
+              <UserAvatar user={u} className="w-5 h-5" size="w-5 h-5" />
               <span>{
                 (u.firstName || u.lastName)
                   ? `${u.firstName || ''} ${u.lastName || ''}`.trim()
@@ -193,16 +172,7 @@ function UserMultiSelect({ users, value, onChange, placeholder = "Wybierz użytk
                 }
                 onClick={() => handleSelect(u.uid)}
               >
-                {u.photo ? (
-                  <Avatar className="w-6 h-6">
-                    <AvatarImage src={u.photo} alt={u.firstName} />
-                    <AvatarFallback>{getInitials(u)}</AvatarFallback>
-                  </Avatar>
-                ) : (
-                  <Avatar className="w-6 h-6">
-                    <AvatarFallback>{getInitials(u)}</AvatarFallback>
-                  </Avatar>
-                )}
+                <UserAvatar user={u} className="w-6 h-6" size="w-6 h-6" />
                 <span>{
                   (u.firstName || u.lastName)
                     ? `${u.firstName || ''} ${u.lastName || ''}`.trim()
@@ -386,6 +356,8 @@ const ProjectPanel = () => {
   const [showOnlyAssigned, setShowOnlyAssigned] = useState(false);
   const [editTask, setEditTask] = useState(null);
   const [editOpen, setEditOpen] = useState(false);
+  const [detailsTask, setDetailsTask] = useState(null);
+  const [detailsOpen, setDetailsOpen] = useState(false);
 
   // ref do animacji wykresów
   const chartRef = useRef(null);
@@ -771,9 +743,11 @@ const ProjectPanel = () => {
             onEdit={handleEditClick}
             onDelete={handleDeleteTask}
             onAddNote={handleAddNote}
+            onRowClick={task => { setDetailsTask(task); setDetailsOpen(true); }}
           />
         </section>
       </motion.main>
+      <TaskDetailsModal open={detailsOpen} onClose={() => setDetailsOpen(false)} task={detailsTask} users={projectUsers} />
     </div>
   );
 };

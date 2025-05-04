@@ -26,5 +26,4 @@ dist-ssr
 # Project exclude paths
 /src/components/ui/button.jsx
 /src/components/ui/input.jsx
-/src/lib/utils.js
-/src/lib/firebase.js
+/src/infrastructure/firebase/firebase.js

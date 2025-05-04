@@ -4,7 +4,7 @@ import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import SettingsDialog from './SettingsDialog';
 import { AuthContext } from '../../App';
-import { db } from '../../lib/firebase';
+import { db } from '../../infrastructure/firebase/firebase.js';
 import { doc, setDoc, getDoc, updateDoc } from 'firebase/firestore';
 import { getUserFromLocalStorage, getUserUidFromLocalStorage } from '../../storage/userLocalStorage';
 import { useUserProfile } from '../../hooks/useUserProfile';
@@ -116,7 +116,7 @@ const Dashboard = () => {
     };
     fetchDashboardData();
     // Dodaj listener na zmiany w taskach jeśli chcesz live update (np. przez onSnapshot)
-  }, [user]);
+  }, [user, authUser]);
 
   useEffect(() => {
     if (authUser) {
