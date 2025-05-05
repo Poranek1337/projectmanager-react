@@ -13,7 +13,6 @@ export const addUserToProject = async (projectId, userUid, role = 'user') => {
   const wsSnap = await getDoc(wsRef);
   if (!wsSnap.exists()) throw new Error('Projekt nie istnieje');
   const users = wsSnap.data().users || [];
-  // Nie dodawaj duplikatów
   if (users.some(u => u.uid === userUid)) return;
   await updateDoc(wsRef, {
     users: [...users, { uid: userUid, role }]

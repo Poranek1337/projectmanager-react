@@ -26,7 +26,6 @@ const Sidebar = () => {
 
   const fetchWorkspaces = async () => {
     if (uid) {
-      // Moje projekty (owner)
       const qMy = query(collection(db, 'workspaces'), where('owner', '==', uid));
       const mySnapshot = await getDocs(qMy);
       const my = [];
@@ -34,7 +33,6 @@ const Sidebar = () => {
         my.push({ id: doc.id, ...doc.data() });
       });
       setMyWorkspaces(my);
-      // Udostępnione (członek, ale nie owner)
       const qShared = query(collection(db, 'workspaces'), where('members', 'array-contains', uid));
       const sharedSnapshot = await getDocs(qShared);
       const shared = [];
@@ -47,7 +45,6 @@ const Sidebar = () => {
         }
       });
       setSharedWorkspaces(shared);
-      // Pobierz dane właścicieli
       const owners = {};
       await Promise.all(Array.from(ownerUids).map(async (ownerUid) => {
         const ownerData = await getUserFromFirestore(db, ownerUid);
@@ -59,7 +56,6 @@ const Sidebar = () => {
 
   useEffect(() => {
     fetchWorkspaces();
-    // eslint-disable-next-line
   }, [uid, createDialogOpen]);
 
   useEffect(() => {
@@ -118,7 +114,7 @@ const Sidebar = () => {
           <a href="#" className="text-gray-700 hover:bg-gray-100 rounded-lg px-3 py-2">Achieved Recently</a>
           <a href="#" className="text-gray-700 hover:bg-gray-100 rounded-lg px-3 py-2">Reporting</a>
           <div className="mt-4 text-xs text-gray-400 uppercase tracking-wider">Workspace</div>
-          {/* My projects */}
+          {}
           <div className="text-xs text-gray-500 font-semibold mt-2 mb-1 ml-2">My projects</div>
           {myWorkspaces.length === 0 && (
             <span className="text-gray-400 text-xs px-3">Brak własnych projektów</span>
@@ -141,7 +137,7 @@ const Sidebar = () => {
               </a>
             );
           })}
-          {/* Shared projects */}
+          {}
           <div className="text-xs text-gray-500 font-semibold mt-4 mb-1 ml-2">Shared</div>
           {sharedWorkspaces.length === 0 && (
             <span className="text-gray-400 text-xs px-3">Brak udostępnionych projektów</span>

@@ -103,7 +103,6 @@ function UserMultiSelect({ users, value, onChange, placeholder = "Wybierz użytk
     }
     setOpen(false);
   };
-  // Zamykaj dropdown po kliknięciu poza nim
   React.useEffect(() => {
     if (!open) return;
     function handleClick(e) {
@@ -315,7 +314,6 @@ const Skeleton = ({ width = 100, height = 20 }) => (
   <div className="bg-gray-200 rounded animate-pulse" style={{ width, height }} />
 );
 
-// Komponent animowanego licznika
 function AnimatedNumber({ value, duration = 1, className = '' }) {
   const controls = useAnimation();
   const ref = useRef();
@@ -359,7 +357,6 @@ const ProjectPanel = () => {
   const [detailsTask, setDetailsTask] = useState(null);
   const [detailsOpen, setDetailsOpen] = useState(false);
 
-  // ref do animacji wykresów
   const chartRef = useRef(null);
   const isInView = useInView(chartRef, { once: true, margin: '-100px' });
 
@@ -368,9 +365,7 @@ const ProjectPanel = () => {
     setProject(ws);
     let users = ws?.users || [];
     let ownerUser = null;
-    // Pobierz pełne dane wszystkich użytkowników (łącznie z ownerem)
     const userDetails = [];
-    // Dodaj ownera na początek
     if (ws?.owner) {
       ownerUser = await getUserFromFirestore(db, ws.owner);
       if (ownerUser) {
@@ -378,7 +373,6 @@ const ProjectPanel = () => {
         userDetails.push(ownerUser);
       }
     }
-    // Dodaj pozostałych użytkowników (bez duplikatu ownera)
     for (const u of users) {
       if (u.uid === ws.owner) continue;
       const data = await getUserFromFirestore(db, u.uid);
@@ -400,16 +394,13 @@ const ProjectPanel = () => {
 
   useEffect(() => {
     fetchProject();
-    // eslint-disable-next-line
   }, [id]);
 
   useEffect(() => {
     fetchTasks();
-    // eslint-disable-next-line
   }, [id]);
 
   const handleAddTask = async ({ title, assignedUserIds }) => {
-    // Jeśli nie wybrano żadnych użytkowników, przypisz wszystkich z workspace
     const assigned = assignedUserIds && assignedUserIds.length > 0 ? assignedUserIds : projectUsers.map(u => u.uid);
     await addTaskToProject(id, title, assigned, 'TODO');
     fetchTasks();
@@ -431,12 +422,10 @@ const ProjectPanel = () => {
     fetchTasks();
   };
 
-  // Filtruj taski wg checkboxa
   const filteredTasks = showOnlyAssigned && currentUser
     ? tasks.filter(t => t.assignedUserIds.includes(currentUser.uid))
     : tasks;
 
-  // Sortowanie tasków do tabeli
   const sortedTasks = [...filteredTasks].sort((a, b) => {
     let valA, valB;
     if (sortKey === 'title') {
@@ -454,7 +443,6 @@ const ProjectPanel = () => {
     return 0;
   });
 
-  // Kanban - drag & drop
   const kanbanTasks = TASK_STATUSES.map(status => ({
     status,
     tasks: filteredTasks.filter(t => t.status === status)
@@ -468,11 +456,9 @@ const ProjectPanel = () => {
     const activeTask = filteredTasks.find(t => t.id === active.id);
     if (!activeTask) return;
     let overColumn = null;
-    // Jeśli przeciągamy na kolumnę (dropzone kolumny)
     if (TASK_STATUSES.includes(over.id)) {
       overColumn = over.id;
     } else {
-      // Jeśli przeciągamy na inny task, znajdź jego status
       overColumn = kanbanTasks.find(col => col.tasks.some(t => t.id === over.id))?.status;
     }
     if (overColumn && activeTask.status !== overColumn) {
@@ -490,7 +476,6 @@ const ProjectPanel = () => {
     }
   };
 
-  // Statystyki liczbowe
   const totalTasks = tasks.length;
   const doneTasks = tasks.filter(t => t.status === 'DONE').length;
   const inProgressTasks = tasks.filter(t => t.status === 'IN_PROGRESS').length;
@@ -498,24 +483,20 @@ const ProjectPanel = () => {
   const usersCount = projectUsers.length;
   const donePercent = totalTasks > 0 ? Math.round((doneTasks / totalTasks) * 100) : 0;
 
-  // Dane do wykresu statusów
   const chartData = [
     { status: 'Do zrobienia', value: todoTasks },
     { status: 'W trakcie', value: inProgressTasks },
     { status: 'Zrobione', value: doneTasks },
   ];
-  // Dane do wykresu kołowego
   const pieData = [
     { name: 'Ukończone', value: doneTasks },
     { name: 'Pozostałe', value: totalTasks - doneTasks },
   ];
-  // Dane do wykresu zadań na użytkownika
   const userTaskData = projectUsers.map(u => ({
     name: u.firstName ? `${u.firstName} ${u.lastName || ''}`.trim() : (u.email || u.uid),
     value: tasks.filter(t => t.assignedUserIds.includes(u.uid)).length,
   }));
 
-  // Dane do wykresu liniowego aktywności (ostatnie 14 dni)
   const days = Array.from({ length: 14 }, (_, i) => {
     const d = new Date();
     d.setDate(d.getDate() - (13 - i));
@@ -630,7 +611,7 @@ const ProjectPanel = () => {
             transition={{ duration: 0.8, ease: 'easeOut' }}
             className="grid grid-cols-1 md:grid-cols-3 gap-8"
           >
-            {/* Wykres słupkowy statusy */}
+            {}
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={isInView ? { scale: 1, opacity: 1 } : {}}
@@ -647,7 +628,7 @@ const ProjectPanel = () => {
                 </ResponsiveContainer>
               </ChartContainer>
             </motion.div>
-            {/* Wykres kołowy ukończone */}
+            {}
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={isInView ? { scale: 1, opacity: 1 } : {}}
@@ -677,7 +658,7 @@ const ProjectPanel = () => {
                 </PieChart>
               </ChartContainer>
             </motion.div>
-            {/* Wykres liniowy aktywność */}
+            {}
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={isInView ? { scale: 1, opacity: 1 } : {}}

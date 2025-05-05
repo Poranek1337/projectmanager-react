@@ -4,13 +4,13 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
 const COLORS = [
-  "#6366f1", // Indigo
-  "#10b981", // Emerald
-  "#f59e42", // Orange
-  "#ef4444", // Red
-  "#3b82f6", // Blue
-  "#a855f7", // Purple
-  "#fbbf24", // Yellow
+  "#6366f1",
+  "#10b981",
+  "#f59e42",
+  "#ef4444",
+  "#3b82f6",
+  "#a855f7",
+  "#fbbf24",
 ];
 
 export default function CreateWorkspaceDialog({ open, onOpenChange, onCreated, userUid }) {

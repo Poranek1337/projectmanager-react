@@ -24,13 +24,11 @@ export default function InvitationsPage() {
       if (userSnap.exists()) {
         let invites = userSnap.data().pendingInvites || [];
         const now = Date.now();
-        // Usuń wygasłe zaproszenia
         const validInvites = invites.filter(inv => !inv.expiresAt || (inv.expiresAt.toDate ? inv.expiresAt.toDate().getTime() : inv.expiresAt) > now);
         if (validInvites.length !== invites.length) {
           await updateDoc(userRef, { pendingInvites: validInvites });
         }
         setPendingInvites(validInvites);
-        // Pobierz nazwy projektów
         const ids = Array.from(new Set(validInvites.map(inv => inv.projectId)));
         const names = {};
         await Promise.all(ids.map(async (id) => {
@@ -61,14 +59,12 @@ export default function InvitationsPage() {
     if (!members.includes(user.uid)) {
       await updateDoc(wsRef, { members: [...members, user.uid] });
     }
-    // Usuń zaproszenie
     const userRef = doc(db, 'users', user.uid);
     const userSnap = await getDoc(userRef);
     const invites = (userSnap.data().pendingInvites || []).filter(i => i.projectId !== invite.projectId);
     await updateDoc(userRef, { pendingInvites: invites });
     setPendingInvites(invites);
     setSuccess("Dołączono do projektu!");
-    // Odśwież Sidebar i widok Shared
     setTimeout(() => window.location.reload(), 500);
   };
 

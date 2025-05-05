@@ -9,13 +9,11 @@ export function ChartContainer({ config, className = '', children, ...props }) {
 }
 
 export function ChartTooltip({ content, ...props }) {
-  // Przekazuje content do Recharts Tooltip
   return content;
 }
 
 export function ChartTooltipContent({ active, payload, label, indicator = "dot", labelKey, nameKey, hideLabel, hideIndicator }) {
   if (!active || !payload || !payload.length) return null;
-  // Specjalny tooltip dla wykresu aktywności (nameKey === 'day')
   if (nameKey === 'day') {
     return (
       <div
@@ -30,7 +28,6 @@ export function ChartTooltipContent({ active, payload, label, indicator = "dot",
       </div>
     );
   }
-  // Domyślny tooltip (np. dla statusów, kołowy)
   return (
     <div className="rounded-lg border bg-popover p-4 text-popover-foreground shadow-xl min-w-[180px]">
       {!hideLabel && (
@@ -59,7 +56,6 @@ export function ChartTooltipContent({ active, payload, label, indicator = "dot",
 }
 
 export function ChartLegend({ content, ...props }) {
-  // Przekazuje content do Recharts Legend
   return content;
 }
 

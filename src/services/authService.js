@@ -24,7 +24,6 @@ export const register = async (userData) => {
   }
 };
 
-// Login a user
 export const login = async (credentials) => {
   try {
     const response = await fetch(`${API_URL}/login`, {
@@ -73,7 +72,6 @@ export const getUserData = () => {
   return userDataString ? JSON.parse(userDataString) : null;
 };
 
-// Decode JWT token without external libraries
 const decodeJWT = (token) => {
   try {
     const base64Url = token.split('.')[1];
@@ -99,7 +97,6 @@ export const isAuthenticated = () => {
     const decodedToken = decodeJWT(token);
     if (!decodedToken) return false;
 
-    // Check if token is expired
     const currentTime = Date.now() / 1000;
     return decodedToken.exp > currentTime;
   } catch (error) {

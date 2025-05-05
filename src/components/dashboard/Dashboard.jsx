@@ -18,7 +18,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip,
 import { useAuth } from '../../hooks/auth/useAuth';
 
 function getInitials(name, surname) {
-  if (!name && !surname) return '?';
+  if (!name && !surname) return '?'
   return `${name?.[0] || ''}${surname?.[0] || ''}`.toUpperCase() || '?';
 }
 
@@ -60,21 +60,17 @@ const Dashboard = () => {
     const fetchDashboardData = async () => {
       let uid = user?.uid || getUserUidFromLocalStorage();
       if (!uid) return;
-      // Pobierz wszystkie workspace'y, gdzie user jest ownerem lub członkiem
       const workspaces = await getUserWorkspaces(db, uid);
       const workspaceIds = workspaces.map(ws => ws.id);
-      // Stwórz mapę id -> title
       const wsTitles = {};
       workspaces.forEach(ws => { wsTitles[ws.id] = ws.title; });
       setWorkspaceTitles(wsTitles);
-      // Pobierz wszystkie taski ze wszystkich tych projektów
       let allTasks = [];
       for (const wsId of workspaceIds) {
         const q = query(collection(db, 'tasks'), where('projectId', '==', wsId));
         const snap = await getDocs(q);
         allTasks = allTasks.concat(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
       }
-      // Pobierz dane wszystkich unikalnych assignedUserIds
       const allUserIds = Array.from(new Set(allTasks.flatMap(t => t.assignedUserIds || [])));
       const assignees = {};
       await Promise.all(allUserIds.map(async (uid) => {
@@ -84,7 +80,6 @@ const Dashboard = () => {
         }
       }));
       setAssigneesMap(assignees);
-      // Statystyki
       const todo = allTasks.filter(t => t.status === 'TODO').length;
       const inProgress = allTasks.filter(t => t.status === 'IN_PROGRESS').length;
       const done = allTasks.filter(t => t.status === 'DONE' || t.status === 'COMPLETED').length;
@@ -93,16 +88,13 @@ const Dashboard = () => {
         { label: 'W trakcie', value: inProgress, description: 'Zadania w trakcie realizacji' },
         { label: 'Zrobione', value: done, description: 'Zadania ukończone' },
       ]);
-      // Ostatnio dodane (ze wszystkich projektów, sortuj po dacie lub id)
       const sortedAll = [...allTasks].sort((a, b) => {
         const aTime = a.createdAt?.seconds || (typeof a.createdAt === 'string' ? new Date(a.createdAt).getTime() / 1000 : 0);
         const bTime = b.createdAt?.seconds || (typeof b.createdAt === 'string' ? new Date(b.createdAt).getTime() / 1000 : 0);
         if (bTime !== aTime) return bTime - aTime;
-        // Fallback: sortuj po id jeśli brak daty lub są równe
         return b.id.localeCompare(a.id);
       });
       setRecentlyAdded(sortedAll.slice(0, 6).map(t => ({ name: t.title, project: t.projectId })));
-      // Zadania przypisane do mnie
       const assigned = allTasks.filter(t => t.assignedUserIds?.includes(uid));
       setAssignedTasks(assigned.map(t => ({
         ...t,
@@ -115,7 +107,6 @@ const Dashboard = () => {
       })));
     };
     fetchDashboardData();
-    // Dodaj listener na zmiany w taskach jeśli chcesz live update (np. przez onSnapshot)
   }, [user, authUser]);
 
   useEffect(() => {
@@ -125,7 +116,6 @@ const Dashboard = () => {
         setProfile(JSON.parse(stored));
         setUser(authUser);
       } else {
-        // Jeśli nie ma w localStorage, pobierz z authUser i zapisz do localStorage
         const newProfile = {
           firstName: authUser.displayName?.split(' ')[0] || '',
           lastName: authUser.displayName?.split(' ')[1] || '',
@@ -196,7 +186,7 @@ const Dashboard = () => {
       </div>
       {activeTab === 'dashboard' && (
         <>
-          {/* Stats */}
+          {}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             {stats.map((stat) => (
               <Card key={stat.label} className="p-6 flex flex-col gap-2 bg-white shadow-sm">
@@ -207,7 +197,7 @@ const Dashboard = () => {
               </Card>
             ))}
           </div>
-          {/* Recently Added & Task Completion Rate */}
+          {}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
             <Card className="p-6 bg-white shadow-sm">
               <div className="font-semibold mb-2">Recently Added</div>
@@ -244,7 +234,7 @@ const Dashboard = () => {
               </div>
             </Card>
           </div>
-          {/* Assigned to me */}
+          {}
           <Card className="p-6 bg-white shadow-sm mb-8">
             <div className="font-semibold mb-2">Assigned to me</div>
             <div className="flex gap-4 mb-2 text-sm">

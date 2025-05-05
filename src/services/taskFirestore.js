@@ -2,7 +2,6 @@ import { db } from '../infrastructure/firebase/firebase.js';
 import { collection, addDoc, getDocs, query, where, doc, updateDoc, arrayUnion, deleteDoc } from 'firebase/firestore';
 import { createTaskModel, createNoteModel } from '../models/taskModel';
 
-// Dodaj nowy task do projektu
 export const addTaskToProject = async (projectId, title, assignedUserIds = [], status = 'TODO') => {
   if (!projectId || typeof projectId !== 'string' || projectId.trim() === '') {
     console.error('BŁĄD: Nieprawidłowy projectId przy tworzeniu taska:', projectId);
@@ -14,7 +13,6 @@ export const addTaskToProject = async (projectId, title, assignedUserIds = [], s
   return { ...task, id: docRef.id };
 };
 
-// Pobierz taski dla projektu
 export const getTasksForProject = async (projectId) => {
   console.log('Pobieram taski dla projectId:', projectId);
   const q = query(collection(db, 'tasks'), where('projectId', '==', projectId));
@@ -24,13 +22,11 @@ export const getTasksForProject = async (projectId) => {
   return tasks;
 };
 
-// Zmień status taska
 export const updateTaskStatus = async (taskId, status) => {
   const taskRef = doc(db, 'tasks', taskId);
   await updateDoc(taskRef, { status });
 };
 
-// Dodaj notatkę do taska
 export const addNoteToTask = async (taskId, userId, content) => {
   const note = createNoteModel({ taskId, userId, content });
   const taskRef = doc(db, 'tasks', taskId);
@@ -46,7 +42,6 @@ export const addNoteToTask = async (taskId, userId, content) => {
   return note;
 };
 
-// Pobierz notatki z taska
 export const getNotesForTask = async (taskId) => {
   const taskRef = doc(db, 'tasks', taskId);
   const snap = await getDoc(taskRef);
@@ -54,13 +49,11 @@ export const getNotesForTask = async (taskId) => {
   return snap.data().notes || [];
 };
 
-// Edytuj taska (tytuł, przypisani)
 export const updateTask = async (taskId, { title, assignedUserIds }) => {
   const taskRef = doc(db, 'tasks', taskId);
   await updateDoc(taskRef, { title, assignedUserIds });
 };
 
-// Usuń taska
 export const deleteTask = async (taskId) => {
   const taskRef = doc(db, 'tasks', taskId);
   await deleteDoc(taskRef);

@@ -28,7 +28,6 @@ export function useInvitations(user) {
         users: [...users, { uid: user.uid, role: 'user' }],
       });
     }
-    // Usuń zaproszenie
     const userRef = doc(db, 'users', user.uid);
     const userSnap = await getDoc(userRef);
     const invites = (userSnap.data().pendingInvites || []).filter(i => i.projectId !== invite.projectId);

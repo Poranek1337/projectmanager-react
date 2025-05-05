@@ -1,4 +1,3 @@
-// Uniwersalna funkcja do pobierania inicjałów użytkownika
 export function getInitials(user) {
   if (!user) return "?";
   const first = user.firstName?.[0] || "";

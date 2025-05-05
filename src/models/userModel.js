@@ -1,5 +1,3 @@
-// Funkcja do budowania modelu użytkownika na podstawie obiektu Firebase
-
 export const getUserDataFromFirebaseUser = (user, extra = {}) => {
   const displayName = user.displayName || '';
   const [firstName, lastName] = displayName.split(' ');
